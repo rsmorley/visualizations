@@ -1,0 +1,18 @@
+body {
+	background: url('./background.png');
+}
+
+.visualization-container {
+	background-color: rgba(0, 0, 0, 0.85);
+    border-color: rgba(30, 200, 200, 0.55);
+    border: 2px solid rgba(30, 200, 200, 0.55);
+    margin: 50px;
+}
+
+.visualization {
+    border-color: rgba(30, 200, 200, 0.55);
+    border: 1px;
+    color: white;
+	height: 50%;
+	width: 80%;
+}
