@@ -3,6 +3,7 @@ import * as d3 from 'd3';
 import _ from 'lodash';
 
 import * as constants from './constants.js';
+import printSvg from './print.js';
 import './style.css';
 
 function component() {
@@ -14,12 +15,44 @@ function component() {
 
   drawWalkingCirclesWithVaryingDiameters(svgContainer, constants.svgWidth/2, constants.svgHeight/2, 0, 1);
 
-  const element = document.createElement('div');
+  const mainDiv = document.createElement('div');
+  mainDiv.classList.add('pure-g');
 
-  //element.innerHTML = 'Select visualization';
-  element.classList.add('visualization');
+  const leftDiv = document.createElement('div');
+  leftDiv.classList.add('pure-u-1');
+  leftDiv.classList.add('pure-u-md-1-2');
+  leftDiv.classList.add('pure-u-xl-1-3');
+  leftDiv.classList.add('center-aligned-div');
+  const rightDiv = document.createElement('div');
+  rightDiv.classList.add('pure-u-1');
+  rightDiv.classList.add('pure-u-md-1-2');
+  rightDiv.classList.add('pure-u-xl-2-3');
+  rightDiv.classList.add('center-aligned-div');
+  mainDiv.appendChild(leftDiv);
+  mainDiv.appendChild(rightDiv);
 
-  return element;
+  const saveBtn = document.createElement('button');
+  saveBtn.innerHTML = 'Take a snapshot';
+  saveBtn.onclick = printSvg;
+  saveBtn.classList.add('pure-button');
+  saveBtn.classList.add('pure-button-primary');
+  saveBtn.classList.add('button-rounded');
+  leftDiv.appendChild(saveBtn);
+
+  const downloadLink = document.createElement('a');
+  downloadLink.id = 'download-link';
+  downloadLink.title = 'Download SVG';
+  const downloadBtn = document.createElement('button');
+  downloadBtn.id = 'download-button';
+  downloadBtn.innerHTML = 'Download Snapshot';
+  downloadBtn.classList.add('pure-button');
+  downloadBtn.classList.add('pure-button-primary');
+  downloadBtn.classList.add('pure-button-disabled');
+  downloadBtn.classList.add('button-rounded');
+  downloadLink.appendChild(downloadBtn);
+  leftDiv.appendChild(downloadLink);
+
+  return mainDiv;
 }
 
 function drawWalkingCirclesWithVaryingDiameters(svgContainer, xCoord, yCoord, colorIndex, frameCount) {
