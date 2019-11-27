@@ -7,14 +7,16 @@ import printSvg from './print.js';
 import './style.css';
 
 function component() {
+
   // create svg container
   let svgContainer = d3.select('body').append('svg')
-		.attr('height', constants.svgHeight)
-		.attr('width', constants.svgWidth)
-    .attr('class', 'visualization-container');
+    .attr('id', 'visualization-canvas')
+    .attr('class', 'visualization-canvas');
 
-  drawWalkingCirclesWithVaryingDiameters(svgContainer, constants.svgWidth/2, constants.svgHeight/2, 0, 1);
+  let {width, height} = getCanvasDimensions();
+  drawWalkingCirclesWithVaryingDiameters(svgContainer, width/2, height/2, 0, 1);
 
+  // create buttons
   const mainDiv = document.createElement('div');
   mainDiv.classList.add('pure-g');
 
@@ -55,9 +57,22 @@ function component() {
   return mainDiv;
 }
 
+function getCanvasDimensions() {
+  let svgDimensions = {
+    width: 800,
+    height: 600
+  };
+  let svg = document.getElementById('visualization-canvas');
+  if (svg) {
+    return _.pick(svg.getBoundingClientRect(), 'height', 'width');
+  }
+  return svgDimensions;
+}
+
 function drawWalkingCirclesWithVaryingDiameters(svgContainer, xCoord, yCoord, colorIndex, frameCount) {
 
-  let maxRadius = constants.svgWidth/15;
+  let {width, height}  = getCanvasDimensions();
+  let maxRadius = width/10;
   let minRadius = 10;
   let radius = Math.random() * (maxRadius - minRadius) + minRadius;
 
@@ -71,8 +86,8 @@ function drawWalkingCirclesWithVaryingDiameters(svgContainer, xCoord, yCoord, co
 
   xCoord += Math.random() < 0.5 ? -50 : 50;
   yCoord += Math.random() < 0.5 ? -50 : 50;
-  xCoord = Math.max(0, Math.min(xCoord, constants.svgWidth));
-  yCoord = Math.max(0, Math.min(yCoord, constants.svgHeight));
+  xCoord = Math.max(0, Math.min(xCoord, width));
+  yCoord = Math.max(0, Math.min(yCoord, height));
   d3.timeout(
     drawWalkingCirclesWithVaryingDiameters.bind(null,
       svgContainer,
