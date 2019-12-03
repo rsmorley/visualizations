@@ -5,9 +5,11 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 module.exports = {
 	entry: {
     app: './src/index.js',
-    print: './src/print.js'
+    print: './src/print.js',
+    utilities: './src/utilities.js'
   },
 	devServer: {
+    host: '0.0.0.0',
 		contentBase: './dist',
 	},
   plugins: [

@@ -4,6 +4,7 @@ import _ from 'lodash';
 
 import * as constants from './constants.js';
 import printSvg from './print.js';
+import { clearCanvas, getCanvasDimensions } from './utilities.js';
 import './style.css';
 
 function component() {
@@ -13,9 +14,14 @@ function component() {
     .attr('id', 'visualization-canvas')
     .attr('class', 'visualization-canvas');
 
-  let {width, height} = getCanvasDimensions();
+  let svg = document.getElementById('visualization-canvas');
+  let {width, height} = getCanvasDimensions(svg);
   drawWalkingCirclesWithVaryingDiameters(svgContainer, width/2, height/2, 0, 1);
 
+  return createButtons();
+}
+
+function createButtons() {
   // create buttons
   const mainDiv = document.createElement('div');
   mainDiv.classList.add('pure-g');
@@ -41,6 +47,7 @@ function component() {
   saveBtn.classList.add('button-rounded');
   leftDiv.appendChild(saveBtn);
 
+  // create a button with a link wrapper to we can download the svg file
   const downloadLink = document.createElement('a');
   downloadLink.id = 'download-link';
   downloadLink.title = 'Download SVG';
@@ -54,24 +61,22 @@ function component() {
   downloadLink.appendChild(downloadBtn);
   leftDiv.appendChild(downloadLink);
 
-  return mainDiv;
-}
+  const clearBtn = document.createElement('button');
+  clearBtn.innerHTML = 'Clear Canvas';
+  clearBtn.id = 'clear-button';
+  clearBtn.onclick = clearCanvas;
+  clearBtn.classList.add('pure-button');
+  clearBtn.classList.add('pure-button-primary');
+  clearBtn.classList.add('button-rounded');
+  leftDiv.appendChild(clearBtn);
 
-function getCanvasDimensions() {
-  let svgDimensions = {
-    width: 800,
-    height: 600
-  };
-  let svg = document.getElementById('visualization-canvas');
-  if (svg) {
-    return _.pick(svg.getBoundingClientRect(), 'height', 'width');
-  }
-  return svgDimensions;
+  return mainDiv;
 }
 
 function drawWalkingCirclesWithVaryingDiameters(svgContainer, xCoord, yCoord, colorIndex, frameCount) {
 
-  let {width, height}  = getCanvasDimensions();
+  let svg = document.getElementById('visualization-canvas');
+  let {width, height} = getCanvasDimensions(svg);
   let maxRadius = width/10;
   let minRadius = 10;
   let radius = Math.random() * (maxRadius - minRadius) + minRadius;
@@ -98,9 +103,8 @@ function drawWalkingCirclesWithVaryingDiameters(svgContainer, xCoord, yCoord, co
     ), constants.drawDelay);
 
   if (frameCount % 150 == 0) {
-    d3.selectAll("svg > *").remove();
+    clearCanvas();
   }
-
 }
 
 document.body.appendChild(component());

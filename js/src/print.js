@@ -1,5 +1,5 @@
 export default function printSvg() {
-  let canvas = document.getElementsByClassName('visualization-container')[0];
+  let canvas = document.getElementById('visualization-canvas');
   let serializer = new XMLSerializer();
   let source = serializer.serializeToString(canvas);
 
