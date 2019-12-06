@@ -4,6 +4,21 @@ body {
     background-color: #000000;
 }
 
+.page-body {
+    left: 0;
+    padding-left: 160px;
+}
+
+.menu {
+    left: 160px;
+    margin-left: -160px;
+    width: 160px;
+    position: fixed;
+    top: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    bottom: 0;
+}
+
 .visualization-canvas {
 	background-color: rgba(0, 0, 0, 0.85);
     border: 2px solid rgba(43, 209, 252, 0.55);

@@ -8,17 +8,72 @@ import { clearCanvas, getCanvasDimensions } from './utilities.js';
 import './style.css';
 
 function component() {
+  const mainDiv = document.createElement('div');
+  mainDiv.classList.add('page-body');
+  mainDiv.appendChild(createMenu());
+  document.body.appendChild(mainDiv);
 
   // create svg container
-  let svgContainer = d3.select('body').append('svg')
+  let svgContainer = d3.select('.page-body').append('svg')
     .attr('id', 'visualization-canvas')
     .attr('class', 'visualization-canvas');
 
   let svg = document.getElementById('visualization-canvas');
   let {width, height} = getCanvasDimensions(svg);
-  drawWalkingCirclesWithVaryingDiameters(svgContainer, width/2, height/2, 0, 1);
 
-  return createButtons();
+  mainDiv.appendChild(createButtons());
+  
+  drawWalkingCirclesWithVaryingDiameters(svgContainer, width/2, height/2, 0, 1);
+}
+
+function createMenu() {
+  const menuContainer = document.createElement('div');
+  menuContainer.classList.add('menu');
+  
+  const menuDiv = document.createElement('div');
+  menuDiv.classList.add('pure-menu');
+
+  const menuHeading1 = document.createElement('span');
+  menuHeading1.innerHTML = 'Visualizations';
+  menuHeading1.classList.add('pure-menu-heading');
+  menuDiv.appendChild(menuHeading1);
+
+  const menuList1 = document.createElement('ul');
+  menuList1.classList.add('pure-menu-list');
+
+  const menuItem1 = document.createElement('li');
+  menuItem1.classList.add('pure-menu-item');
+
+  const menuLink1 = document.createElement('a');
+  menuLink1.innerHTML = 'Circle Walk';
+  menuLink1.classList.add('pure-menu-link');
+
+  menuItem1.appendChild(menuLink1);
+  menuList1.appendChild(menuItem1);
+  menuDiv.appendChild(menuList1);
+
+  const menuHeading2 = document.createElement('span');
+  menuHeading2.innerHTML = 'Actions';
+  menuHeading2.classList.add('pure-menu-heading');
+  menuDiv.appendChild(menuHeading2);
+
+  const menuList2 = document.createElement('ul');
+  menuList2.classList.add('pure-menu-list');
+
+  const menuItem2 = document.createElement('li');
+  menuItem2.classList.add('pure-menu-item');
+  
+  const menuLink2 = document.createElement('a');
+  menuLink2.innerHTML = 'Take Snapshot';
+  menuLink2.classList.add('pure-menu-link');
+
+  menuItem2.appendChild(menuLink2);
+  menuList2.appendChild(menuItem2);
+  menuDiv.appendChild(menuList2);
+
+  menuContainer.appendChild(menuDiv);
+
+  return menuContainer;
 }
 
 function createButtons() {
@@ -107,4 +162,4 @@ function drawWalkingCirclesWithVaryingDiameters(svgContainer, xCoord, yCoord, co
   }
 }
 
-document.body.appendChild(component());
+component();
