@@ -1,22 +1,41 @@
 body {
 	background: url('./background.png');
     background-repeat: no-repeat;
-    background-color: #000000;
+    background-color: #000;
 }
 
 .page-body {
     left: 0;
-    padding-left: 160px;
+    overflow-x: hidden;
+    padding-left: 180px;
 }
 
 .menu {
-    left: 160px;
-    margin-left: -160px;
-    width: 160px;
+    left: 180px;
+    margin-left: -180px;
+    width: 180px;
     position: fixed;
     top: 0;
     background-color: rgba(0, 0, 0, 0.75);
     bottom: 0;
+}
+
+.menu-item-divided {
+    border-top: 1px solid #333;
+}
+
+.pure-menu-heading {
+    background-color: rgba(43, 209, 252, .55);
+    color: #fff;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.pure-menu-selected>.pure-menu-link {
+    color: #999;
+}
+
+.pure-menu-link {
+    color: rgba(43, 209, 252, .75);
 }
 
 .visualization-canvas {
