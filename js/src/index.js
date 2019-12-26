@@ -7,6 +7,8 @@ import printSvg from './print.js';
 import { clearCanvas, getCanvasDimensions } from './utilities.js';
 import './style.css';
 
+var drawMode = constants.VIS_MODE_CIRCLE_WALK;
+
 function component() {
   const mainDiv = document.createElement('div');
   mainDiv.classList.add('page-body');
@@ -18,12 +20,44 @@ function component() {
     .attr('id', 'visualization-canvas')
     .attr('class', 'visualization-canvas');
 
-  let svg = document.getElementById('visualization-canvas');
-  let {width, height} = getCanvasDimensions(svg);
-
-  drawWalkingCirclesWithVaryingDiameters(svgContainer, width/2, height/2, 0, 1);
+    drawFrame();
 }
 
+function drawFrame(xCoord, yCoord, colorIndex = 0, frameCount = 0) {
+  let svg = document.getElementById('visualization-canvas');
+  if (!xCoord) {
+    let {width, height} = getCanvasDimensions(svg);
+    xCoord = width/2;
+    yCoord = height/2;
+  }
+  switch(drawMode) {
+    case constants.VIS_MODE_RANDOM_LINES:
+      console.log('not implemented');
+      break;
+    default:
+      ({xCoord, yCoord} = drawWalkingCirclesWithVaryingDiameters(
+        xCoord,
+        yCoord,
+        colorIndex
+      ));
+  }
+
+  _.delay(drawFrame, constants.drawDelay, xCoord, yCoord, ++colorIndex % 5, ++frameCount);
+
+  if (frameCount % 150 == 0) {
+    clearCanvas();
+  }
+}
+
+function setVisualization(mode) {
+  drawMode = mode;
+}
+
+/**
+ *  This function creates the left hand menu
+ * 
+ *  @return {div}
+ */
 function createMenu() {
   const menuContainer = document.createElement('div');
   menuContainer.classList.add('menu');
@@ -39,9 +73,15 @@ function createMenu() {
   const visMenuItems = new Array();
   visMenuItems.push(
     {
+      click: _ => setVisualization(constants.VIS_MODE_CIRCLE_WALK),
+      id: 'menu-circle-walk-link',
       listItemClasses: new Array('pure-menu-selected'),
-      id: 'menu-circle-link',
       text: 'Circle Walk'
+    },
+    {
+      click: _ => setVisualization(constants.VIS_MODE_RANDOM_LINES),
+      id: 'menu-random-lines-link',
+      text: 'Random Lines'
     });
   menuDiv.appendChild(createMenuItems(visMenuItems));
 
@@ -80,10 +120,11 @@ function createMenu() {
 /**
  * 
  * @param {Array} items array of objects
+ *  each item has the following properties
  *  text: text displayed for menu item - required 
  *  click: onclick function - optional
  *  linkClasses: array of classes to add to href - optional
- *  listItemClasses: array of classes to add to li- optional
+ *  listItemClasses: array of classes to add to li- optional:w
  */
 function createMenuItems (items) {
 
@@ -119,7 +160,7 @@ function createMenuItems (items) {
   return menuList;
 }
 
-function drawWalkingCirclesWithVaryingDiameters(svgContainer, xCoord, yCoord, colorIndex, frameCount) {
+function drawWalkingCirclesWithVaryingDiameters(xCoord, yCoord, colorIndex) {
 
   let svg = document.getElementById('visualization-canvas');
   let {width, height} = getCanvasDimensions(svg);
@@ -127,6 +168,7 @@ function drawWalkingCirclesWithVaryingDiameters(svgContainer, xCoord, yCoord, co
   let minRadius = 10;
   let radius = Math.random() * (maxRadius - minRadius) + minRadius;
 
+  let svgContainer = d3.select('#visualization-canvas');
   // draw a circle
   let circle = svgContainer.append('circle')
     .attr('cx', xCoord)
@@ -139,18 +181,8 @@ function drawWalkingCirclesWithVaryingDiameters(svgContainer, xCoord, yCoord, co
   yCoord += Math.random() < 0.5 ? -50 : 50;
   xCoord = Math.max(0, Math.min(xCoord, width));
   yCoord = Math.max(0, Math.min(yCoord, height));
-  d3.timeout(
-    drawWalkingCirclesWithVaryingDiameters.bind(null,
-      svgContainer,
-      xCoord,
-      yCoord,
-      ++colorIndex % 5,
-      ++frameCount
-    ), constants.drawDelay);
 
-  if (frameCount % 150 == 0) {
-    clearCanvas();
-  }
+  return {xCoord, yCoord};
 }
 
 component();
