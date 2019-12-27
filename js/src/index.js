@@ -32,7 +32,11 @@ function drawFrame(xCoord, yCoord, colorIndex = 0, frameCount = 0) {
   }
   switch(drawMode) {
     case constants.VIS_MODE_RANDOM_LINES:
-      console.log('not implemented');
+      ({xCoord, yCoord} = drawRandomLinesToOrigin(
+        xCoord,
+        yCoord,
+        colorIndex
+      ));
       break;
     default:
       ({xCoord, yCoord} = drawWalkingCirclesWithVaryingDiameters(
@@ -40,11 +44,12 @@ function drawFrame(xCoord, yCoord, colorIndex = 0, frameCount = 0) {
         yCoord,
         colorIndex
       ));
+      break;
   }
 
   _.delay(drawFrame, constants.drawDelay, xCoord, yCoord, ++colorIndex % 5, ++frameCount);
 
-  if (frameCount % 150 == 0) {
+  if (frameCount % 1500 == 0) {
     clearCanvas();
   }
 }
@@ -113,6 +118,11 @@ function createMenu() {
 
   menuDiv.appendChild(createMenuItems(actionMenuItems));
   
+  const menuHeading3 = document.createElement('span');
+  menuHeading3.innerHTML = 'Config';
+  menuHeading3.classList.add('pure-menu-heading');
+  menuDiv.appendChild(menuHeading3);
+
   menuContainer.appendChild(menuDiv);
   return menuContainer;
 }
@@ -160,8 +170,15 @@ function createMenuItems (items) {
   return menuList;
 }
 
+/**
+ * 
+ * @param {number} xCoord 
+ * @param {number} yCoord 
+ * @param {number} colorIndex 
+ * 
+ * @return {Object} xCoord, yCoord
+ */
 function drawWalkingCirclesWithVaryingDiameters(xCoord, yCoord, colorIndex) {
-
   let svg = document.getElementById('visualization-canvas');
   let {width, height} = getCanvasDimensions(svg);
   let maxRadius = width/10;
@@ -182,6 +199,35 @@ function drawWalkingCirclesWithVaryingDiameters(xCoord, yCoord, colorIndex) {
   xCoord = Math.max(0, Math.min(xCoord, width));
   yCoord = Math.max(0, Math.min(yCoord, height));
 
+  return {xCoord, yCoord};
+}
+
+/**
+ * 
+ * @param {number} xCoord 
+ * @param {number} yCoord 
+ * @param {number} colorIndex 
+ * 
+ * @return {Object} xCoord, yCoord
+ */
+function drawRandomLinesToOrigin(xCoord, yCoord, colorIndex) {
+  let svg = document.getElementById('visualization-canvas');
+  let {width, height} = getCanvasDimensions(svg);
+  let xCoordCentroid = width/2;
+  let yCoordCentroid = height/2;
+
+  let svgContainer = d3.select('#visualization-canvas');
+  // draw a line
+  let line = svgContainer.append('line')
+    .attr('x1', xCoord)
+    .attr('y1', yCoord)
+    .attr('x2', xCoordCentroid)
+    .attr('y2', yCoordCentroid)
+    .style('stroke', _.get(constants, ['eightiesColors', colorIndex]));
+
+ 
+  xCoord = Math.random() * width;
+  yCoord = Math.random() * height;
   return {xCoord, yCoord};
 }
 
