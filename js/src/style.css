@@ -30,12 +30,24 @@ body {
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
 }
 
+a.pure-menu-link:hover {
+    background-color: rgb(74, 74, 74);
+}
+
 .pure-menu-selected>.pure-menu-link {
+    color: #999;
+}
+
+.pure-submenu-selected {
     color: #999;
 }
 
 .pure-menu-link {
     color: rgba(43, 209, 252, .75);
+}
+
+.pure-menu-children {
+    background-color: rgba(0, 0, 0, 0.75);
 }
 
 .visualization-canvas {

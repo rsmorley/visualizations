@@ -12,7 +12,5 @@ export const eightiesColors = new Array(
   d3.rgb('#c04df955'),
   d3.rgb('#ff3f3f55'));
 
-export const drawDelay = 400;
-
 export const VIS_MODE_CIRCLE_WALK = 'CIRCLE_WALK';
 export const VIS_MODE_RANDOM_LINES = 'RANDOM_LINES';

@@ -7,7 +7,10 @@ import printSvg from './print.js';
 import { clearCanvas, getCanvasDimensions } from './utilities.js';
 import './style.css';
 
-var drawMode = constants.VIS_MODE_CIRCLE_WALK;
+let drawMode = constants.VIS_MODE_CIRCLE_WALK;
+let drawDelay = 400;
+let maxFrames = 1500;
+
 
 function component() {
   const mainDiv = document.createElement('div');
@@ -47,14 +50,21 @@ function drawFrame(xCoord, yCoord, colorIndex = 0, frameCount = 0) {
       break;
   }
 
-  _.delay(drawFrame, constants.drawDelay, xCoord, yCoord, ++colorIndex % 5, ++frameCount);
+  _.delay(drawFrame, drawDelay, xCoord, yCoord, ++colorIndex % 5, ++frameCount);
 
-  if (frameCount % 1500 == 0) {
+  if (frameCount % maxFrames == 0) {
     clearCanvas();
   }
 }
 
-function setVisualization(mode) {
+function setVisualization(event, mode) {
+  let clickedItem = _.get(event, 'target.parentElement', {});
+  let otherListItems = _.get(clickedItem, 'parentElement.children', {});
+  _.forEach(otherListItems, (listItem) => {
+    listItem.classList.remove('pure-menu-selected');
+  });
+  clickedItem.classList.add('pure-menu-selected');
+  
   drawMode = mode;
 }
 
@@ -78,13 +88,13 @@ function createMenu() {
   const visMenuItems = new Array();
   visMenuItems.push(
     {
-      click: _ => setVisualization(constants.VIS_MODE_CIRCLE_WALK),
+      click: (event) => setVisualization(event, constants.VIS_MODE_CIRCLE_WALK),
       id: 'menu-circle-walk-link',
       listItemClasses: new Array('pure-menu-selected'),
       text: 'Circle Walk'
     },
     {
-      click: _ => setVisualization(constants.VIS_MODE_RANDOM_LINES),
+      click: (event) => setVisualization(event, constants.VIS_MODE_RANDOM_LINES),
       id: 'menu-random-lines-link',
       text: 'Random Lines'
     });
@@ -98,7 +108,6 @@ function createMenu() {
   const actionMenuItems = new Array();
   actionMenuItems.push(
     {
-      listItemClasses: new Array('menu-item-divided'),
       click: printSvg,
       id: 'menu-print-link',
       text: 'Take Snapshot'
@@ -123,6 +132,60 @@ function createMenu() {
   menuHeading3.classList.add('pure-menu-heading');
   menuDiv.appendChild(menuHeading3);
 
+  const configMenuItems = new Array();
+  configMenuItems.push(
+    {
+      listItemClasses: new Array('pure-menu-has-children','pure-menu-allow-hover'),
+      id: 'menu-draw-delay-link',
+      text: 'Draw Delay',
+      children: new Array({
+        click: () => {drawDelay = 50;},
+        id: 'menu-draw-delay-50-link',
+        text: '50'
+      },{
+        click: () => {drawDelay = 100;},
+        id: 'menu-draw-delay-100-link',
+        text: '100'
+      },{
+        click: () => {drawDelay = 200;},
+        id: 'menu-draw-delay-100-link',
+        text: '200'
+      },{
+        click: () => {drawDelay = 400;},
+        id: 'menu-draw-delay-100-link',
+        text: '400'
+      },{
+        click: () => {drawDelay = 800;},
+        id: 'menu-draw-delay-100-link',
+        text: '800'
+      })
+    });
+  configMenuItems.push(
+    {
+      listItemClasses: new Array('pure-menu-has-children','pure-menu-allow-hover'),
+      children: new Array({
+        click: () => {maxFrames = 250;},
+        id: 'menu-max-frames-50-link',
+        text: '250'
+      },{
+        click: () => {maxFrames = 500;},
+        id: 'menu-max-frames-100-link',
+        text: '500'
+      },{
+        click: () => {maxFrames = 1000;},
+        id: 'menu-max-frames-100-link',
+        text: '1000'
+      },{
+        click: () => {maxFrames = 2000;},
+        id: 'menu-max-frames-100-link',
+        text: '2000'
+      }),
+      id: 'menu-max-frames-link',
+      text: 'Max Frames'
+    });
+
+  menuDiv.appendChild(createMenuItems(configMenuItems));
+
   menuContainer.appendChild(menuDiv);
   return menuContainer;
 }
@@ -130,11 +193,8 @@ function createMenu() {
 /**
  * 
  * @param {Array} items array of objects
- *  each item has the following properties
- *  text: text displayed for menu item - required 
- *  click: onclick function - optional
- *  linkClasses: array of classes to add to href - optional
- *  listItemClasses: array of classes to add to li- optional:w
+ * 
+ * @return {Object} menuItems
  */
 function createMenuItems (items) {
 
@@ -142,6 +202,25 @@ function createMenuItems (items) {
   menuList.classList.add('pure-menu-list');
 
   _.forEach(items, (item) => {
+    let listItem = createMenuItem(item);
+    menuList.appendChild(listItem);
+  });
+
+  return menuList;
+}
+
+/**
+ * 
+ * @param {*} item has the following properites
+ *  text: text displayed for menu item - required 
+ *  click: onclick function - optional
+ *  children: submenu items - optional
+ *  linkClasses: array of classes to add to href - optional
+ *  listItemClasses: array of classes to add to li- optional
+ * 
+ * @return {Object} listItem containing a link
+ */
+function createMenuItem(item) {
     const listItem = document.createElement('li');
     listItem.classList.add('pure-menu-item');
     if (_.isArray(item.listItemClasses)) {
@@ -164,10 +243,18 @@ function createMenuItems (items) {
     menuLink.id = item.id;
 
     listItem.appendChild(menuLink);
-    menuList.appendChild(listItem);
-  });
+    if (_.isArray(item.children)) {
+      const childList = document.createElement('ul');
+      childList.classList.add('pure-menu-children');
+      _.forEach(item.children, (child) => {
+        const childListItem = createMenuItem(child);
+        
+        childList.appendChild(childListItem);
+      });
 
-  return menuList;
+      listItem.appendChild(childList);
+    }
+    return listItem;
 }
 
 /**
@@ -223,8 +310,8 @@ function drawRandomLinesToOrigin(xCoord, yCoord, colorIndex) {
     .attr('y1', yCoord)
     .attr('x2', xCoordCentroid)
     .attr('y2', yCoordCentroid)
-    .style('stroke', _.get(constants, ['eightiesColors', colorIndex]));
-
+    .style('stroke', _.get(constants, ['eightiesColors', colorIndex]))
+    .style('stroke-width', 2);
  
   xCoord = Math.random() * width;
   yCoord = Math.random() * height;
